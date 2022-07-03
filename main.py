@@ -1,5 +1,6 @@
 from pywhatkit.whats import sendwhatmsg_instantly, sendwhats_image
 from os import getcwd, listdir
+import check_file_paths as cp
 from time import sleep
 import pandas as pd
 from sys import exit
@@ -52,6 +53,8 @@ def mass_send_msg(
             sleep((wait_time - 7) + close_time)
     return f'{len(df)} messages sent successfully!'
 
+
+cp.check_dir()
 
 print("""
       1. Please ensure you're signed into whatsapp web on this computer
