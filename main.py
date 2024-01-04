@@ -1,5 +1,6 @@
 # from pywhatkit.whats import sendwhatmsg_instantly, sendwhats_image
 # import logger # TODO set up logging once everything is final
+# TODO rewrite readme generated off copilot at end
 from os import listdir
 from sys import exit
 from time import sleep
