@@ -1,67 +1,88 @@
-def check_number(number: str) -> bool:
+def clean_number(number: str) -> str:
     if "+" in number:
-        return True
+        return number[1:]
     else:
-        return False
+        return number
 
 
-def open_page(driver, base_url: str, receiver: str) -> None:
-    if check_number(number=receiver):
-        phone = receiver[1:]
-        url = f"{base_url}phone={phone}"
-        driver.get(url)
+def open_page(driver, base_url: str, receiver: str):
+    url = f"{base_url}phone={clean_number(receiver)}"
+    return driver.get(url)
 
 
-def check_dir() -> None:
+def check_wd() -> bool:
     from csv import writer
     from os import listdir, mkdir
 
-    dir = listdir("../whatsapp_bot")
+    dir = listdir("..")
     if "pictures" not in dir:
-        mkdir("pictures")
+        mkdir("../pictures")
     if "recipients" not in dir:
-        mkdir("recipients")
-        with open("recipients/recipients.csv", "w") as f:
+        mkdir("../recipients")
+        with open("../recipients/recipients.csv", "w") as f:
             writer = writer(f)
             writer.writerow(["first_name", "last_name", "phone_number"])
+    return True
 
 
-def copy_image(path: str) -> None:
+def send_message():
+    pass
+
+
+def copy_image(relative_path: str) -> None:
     """Copy the Image to Clipboard based on the Platform"""
+    from platform import system as sys
+    from os import system
+    from pathlib import Path
 
-    _system = system().lower()
-    if _system == "linux":
-        if pathlib.Path(path).suffix in (".PNG", ".png"):
-            os.system(f"copyq copy image/png - < {path}")
-        elif pathlib.Path(path).suffix in (".jpg", ".JPG", ".jpeg", ".JPEG"):
-            os.system(f"copyq copy image/jpeg - < {path}")
-        else:
-            raise Exception(
-                f"File Format {pathlib.Path(path).suffix} is not Supported!"
-            )
-    elif _system == "windows":
+    _system = sys().lower()
+    if _system == "windows":
         from io import BytesIO
 
-        import win32clipboard  # pip install pywin32
+        system(
+            "pip install pywin32"
+        )  # building on macbook so unable to install pywin32
+        from win32clipboard import (
+            OpenClipboard,
+            EmptyClipboard,
+            SetClipboardData,
+            CloseClipboard,
+            CF_DIB,
+        )
         from PIL import Image
 
-        image = Image.open(path)
+        image = Image.open(relative_path)
         output = BytesIO()
         image.convert("RGB").save(output, "BMP")
         data = output.getvalue()[14:]
         output.close()
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
-        win32clipboard.CloseClipboard()
+        OpenClipboard()
+        EmptyClipboard()
+        SetClipboardData(CF_DIB, data)
+        CloseClipboard()
     elif _system == "darwin":
-        if pathlib.Path(path).suffix in (".jpg", ".jpeg", ".JPG", ".JPEG"):
-            os.system(
-                f"osascript -e 'set the clipboard to (read (POSIX file \"{path}\") as JPEG picture)'"
+        if Path(relative_path).suffix.lower() in (".jpg", ".jpeg"):
+            system(
+                f"osascript -e 'set the clipboard to (read (POSIX file \"{relative_path}\") as JPEG picture)'"
             )
         else:
             raise Exception(
-                f"File Format {pathlib.Path(path).suffix} is not Supported!"
+                f"File Format {Path(relative_path).suffix} is not Supported!"
             )
     else:
         raise Exception(f"Unsupported System: {_system}")
+
+
+def paste_image(input_field) -> None:
+    """Paste the Image from the Clipboard based on the Platform"""
+    from platform import system as sys
+    from selenium.webdriver.common.keys import Keys
+
+    _system = sys().lower()
+    if _system == "windows":
+        input_field.send_keys(Keys.CONTROL, "v")
+    elif _system == "darwin":
+        input_field.send_keys(Keys.COMMAND, "v")
+    else:
+        raise Exception(f"Unsupported System: {_system}")
+    return None
