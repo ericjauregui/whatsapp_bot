@@ -1,56 +1,21 @@
-# from pywhatkit.whats import sendwhatmsg_instantly, sendwhats_image
 # import logger # TODO set up logging once everything is final
 # TODO rewrite readme generated off copilot at end
 # from os import listdir, path
-
-# from sys import exit
-from time import sleep
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-import pandas as pd
 from utils import utils
 
-BASE_URL = "https://web.whatsapp.com/send?"
-PICS_PATH = "pictures/"
-TARGETS_PATH = "recipients/recipients.csv"
+# from sys import exit
 
-# Initialize the Chrome Driver with local cookies for verification
-options = webdriver.ChromeOptions()
-options.add_argument(
-    "user-data-dir=/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
-)  # TODO variable
-driver = webdriver.Chrome(chrome_options=options)
-wait = WebDriverWait(driver, 60)
+COOKIES = "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
 
-utils.open_page(
-    driver=driver, base_url=BASE_URL, receiver="18183319292"
-)  # TODO variable
-message_box_path = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
-message_box = wait.until(
-    EC.presence_of_element_located((By.XPATH, message_box_path))
-)
-sleep(2)  # TODO variable
-input = "hello i am a robot"  # TODO variable
-message_box.click()
-message_box.send_keys(input, Keys.ENTER)
-message_box = wait.until(
-    EC.presence_of_element_located((By.XPATH, message_box_path))
-)
-# TODO variable toggle on picture or no and variable for picture path
-utils.copy_image("pictures/IMG_6549.jpeg")  # TODO variable
-utils.paste_image(message_box)
-sleep(3)  # TODO variable
-pic_msg_box_path = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'
-pic_msg_box = wait.until(
-    EC.presence_of_element_located((By.XPATH, pic_msg_box_path))
-)
-pic_msg_box.click()
-# TODO write functions for sending messages and pictures
+if utils.check_wd():
+    for i in range(5):
+        utils.send_message(
+            cookies_path=COOKIES,
+            include_pics=True,
+            message="Hello, I am Marco the robot",
+            wait_time=5,
+            process_timeout=15,
+        )
 
 
 # def mass_send_msg(
