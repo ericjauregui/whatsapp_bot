@@ -85,7 +85,7 @@ def paste_image(input_field) -> None:
 
 
 def send_message(
-    profile: str,
+    cookies_path: str,
     base_url: str = "https://web.whatsapp.com/send?",
     receivers_path: str = "recipients/recipients.csv",
     include_pics: bool = False,
@@ -117,8 +117,8 @@ def send_message(
 
     # initialize webdriver args
     chrome_options = Options()
-    # chrome_options.add_argument(f"--user-data-dir={cookies_path}")
-    chrome_options.add_argument(f"--profile-directory={profile}")
+    chrome_options.add_argument(f"--user-data-dir={cookies_path}")
+    # chrome_options.add_argument(f"--profile-directory={profile}")
     chrome_options.add_argument("--disable-application-cache=0")
     txt_xpath = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
     send_pic_xpath = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'

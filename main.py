@@ -3,8 +3,7 @@ from utils import utils
 from csv import reader
 from sys import exit
 
-# COOKIES = "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
-PROFILE = input("Google chrome cookies profile: ")
+COOKIES = "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
 
 if utils.check_wd():
     print(
@@ -28,14 +27,14 @@ if utils.check_wd():
         ).lower()
         if pics_flow == "yes":
             utils.send_message(
-                cookies_path=PROFILE,
+                profile=COOKIES,
                 include_pics=True,
                 message=input("Enter your message: "),
                 wait_time=5,
             )
         else:
             utils.send_message(
-                cookies_path=PROFILE,
+                profile=COOKIES,
                 include_pics=False,
                 message=input("Enter your message: "),
                 wait_time=5,
