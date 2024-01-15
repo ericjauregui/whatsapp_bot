@@ -27,14 +27,14 @@ if utils.check_wd():
         ).lower()
         if pics_flow == "yes":
             utils.send_message(
-                profile=COOKIES,
+                cookies_path=COOKIES,
                 include_pics=True,
                 message=input("Enter your message: "),
                 wait_time=5,
             )
         else:
             utils.send_message(
-                profile=COOKIES,
+                cookies_path=COOKIES,
                 include_pics=False,
                 message=input("Enter your message: "),
                 wait_time=5,
