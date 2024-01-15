@@ -32,9 +32,9 @@ def copy_image(relative_path: str) -> None:
     if _system == "windows":
         from io import BytesIO
 
-        system(
-            "pip install pywin32"
-        )  # building on macbook so unable to install pywin32
+#        system(
+#            "pip install pywin32"
+#        )  # building on macbook so unable to install pywin32
         from win32clipboard import (
             OpenClipboard,
             EmptyClipboard,
@@ -86,8 +86,8 @@ def send_message(
     receivers_path: str = "recipients/recipients.csv",
     include_pics: bool = False,
     message: str = " ",
-    wait_time: int = 3,
-    process_timeout: int = 30,
+    wait_time: int = 7,
+    process_timeout: int = 360,
 ) -> str:
     """Send Pictures or Messages to Multiple WhatsApp Contacts
     Requirements:
@@ -119,6 +119,8 @@ def send_message(
     driver = webdriver.Chrome(options=chrome_options)
     for phone in receivers:
         wait = WebDriverWait(driver, process_timeout)
+        driver.get("https://web.whatsapp.com")
+        sleep(wait_time)
         open_page(driver=driver, base_url=base_url, receiver=phone)
         sleep(wait_time)
         txt_box = wait.until(
@@ -126,7 +128,7 @@ def send_message(
         )
         txt_box.click()
         txt_box.send_keys(message, Keys.ENTER)
-        print(f"{'\'' + message + '\''} sent successfully to {phone}!")
+        print(f"'{message}' sent successfully to {phone}!")
         if include_pics:
             for pic in listdir("pictures"):
                 copy_image(f"pictures/{pic}")
@@ -141,5 +143,5 @@ def send_message(
                 )
                 send_pic.click()
                 sleep(wait_time)
-        print(f"{len(listdir("pictures"))} pictures sent successfully to {phone}!")
+        print(f"{len(listdir('pictures'))} pictures sent successfully to {phone}!")
     return f"{len(receivers)} messages sent successfully!"

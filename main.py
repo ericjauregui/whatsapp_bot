@@ -3,7 +3,7 @@ from utils import utils
 from csv import reader
 from sys import exit
 
-COOKIES = "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
+COOKIES = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data/Default/Network"
 
 if utils.check_wd():
     print(
@@ -30,16 +30,14 @@ if utils.check_wd():
                 cookies_path=COOKIES,
                 include_pics=True,
                 message=input("Enter your message: "),
-                wait_time=5,
-                process_timeout=15,
+                wait_time=10,
             )
         else:
             utils.send_message(
                 cookies_path=COOKIES,
                 include_pics=False,
                 message=input("Enter your message: "),
-                wait_time=5,
-                process_timeout=15,
+                wait_time=10,
             )
     else:
         exit("Please try again and type 'yes' to start the program")
