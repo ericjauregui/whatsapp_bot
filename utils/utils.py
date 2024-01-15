@@ -142,23 +142,4 @@ def send_message(
                 send_pic.click()
                 sleep(wait_time)
         print(f"{len(listdir("pictures"))} pictures sent successfully to {phone}!")
-        if len(receivers) > 1:
-            import pyautogui as gui
-            _system = sys().lower()
-            if _system == "windows":
-                size = gui.size()
-                gui.moveTo(size[0] / 2, size[1] / 2)
-                gui.click()
-                sleep(1)
-                hotkey("ctrl", "t")
-                sleep(1)
-                hotkey("ctrl", "w")
-            elif _system == "darwin":
-                size = gui.size()
-                gui.moveTo(size[0] / 2, size[1] / 2)
-                gui.click()
-                sleep(1)
-                hotkey("command", "t")
-                sleep(1)
-                hotkey("command", "w")
     return f"{len(receivers)} messages sent successfully!"
