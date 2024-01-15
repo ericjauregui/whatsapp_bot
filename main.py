@@ -4,7 +4,7 @@ from csv import reader
 from sys import exit
 
 # COOKIES = "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
-PROFILE = "Profile 1"
+PROFILE = input("Google chrome cookies profile: ")
 
 if utils.check_wd():
     print(

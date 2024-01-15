@@ -4,9 +4,11 @@ def clean_number(number: str) -> str:
     else:
         return number
 
+
 def open_page(driver, base_url: str, receiver: str):
     url = f"{base_url}phone={clean_number(receiver)}"
     return driver.get(url)
+
 
 def check_wd() -> bool:
     from csv import writer
@@ -22,6 +24,7 @@ def check_wd() -> bool:
             writer.writerow(["first_name", "last_name", "phone_number"])
     return True
 
+
 def copy_image(relative_path: str) -> None:
     """Copy the Image to Clipboard based on the Platform"""
     from platform import system as sys
@@ -32,9 +35,9 @@ def copy_image(relative_path: str) -> None:
     if _system == "windows":
         from io import BytesIO
 
-        system(
-            "pip install pywin32"
-        )  # building on macbook so unable to install pywin32
+        #        system(
+        #            "pip install pywin32"
+        #        )  # building on macbook so unable to install pywin32
         from win32clipboard import (
             OpenClipboard,
             EmptyClipboard,
@@ -79,6 +82,7 @@ def paste_image(input_field) -> None:
     else:
         raise Exception(f"Unsupported System: {_system}")
     return None
+
 
 def send_message(
     profile: str,
@@ -128,7 +132,7 @@ def send_message(
         )
         txt_box.click()
         txt_box.send_keys(message, Keys.ENTER)
-        print(f"{'\'' + message + '\''} sent successfully to {phone}!")
+        print(f"'{message}' sent successfully to {phone}!")
         if include_pics:
             for pic in listdir("pictures"):
                 copy_image(f"pictures/{pic}")
@@ -143,5 +147,7 @@ def send_message(
                 )
                 send_pic.click()
                 sleep(wait_time)
-        print(f"{len(listdir("pictures"))} pictures sent successfully to {phone}!")
+        print(
+            f"{len(listdir('pictures'))} pictures sent successfully to {phone}!"
+        )
     return f"{len(receivers)} messages sent successfully!"
