@@ -150,4 +150,5 @@ def send_message(
         print(
             f"{len(listdir('pictures'))} pictures sent successfully to {phone}!"
         )
+    driver.quit()
     return f"{len(receivers)} messages sent successfully!"
