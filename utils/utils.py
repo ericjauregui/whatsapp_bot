@@ -81,13 +81,13 @@ def paste_image(input_field) -> None:
     return None
 
 def send_message(
-    cookies_path: str,
+    profile: str,
     base_url: str = "https://web.whatsapp.com/send?",
     receivers_path: str = "recipients/recipients.csv",
     include_pics: bool = False,
     message: str = " ",
-    wait_time: int = 3,
-    process_timeout: int = 30,
+    wait_time: int = 5,
+    process_timeout: int = 180,
 ) -> str:
     """Send Pictures or Messages to Multiple WhatsApp Contacts
     Requirements:
@@ -113,7 +113,9 @@ def send_message(
 
     # initialize webdriver args
     chrome_options = Options()
-    chrome_options.add_argument(f"--user-data-dir={cookies_path}")
+    # chrome_options.add_argument(f"--user-data-dir={cookies_path}")
+    chrome_options.add_argument(f"--profile-directory={profile}")
+    chrome_options.add_argument("--disable-application-cache=0")
     txt_xpath = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
     send_pic_xpath = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'
     driver = webdriver.Chrome(options=chrome_options)
