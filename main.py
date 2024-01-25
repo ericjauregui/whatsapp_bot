@@ -3,7 +3,7 @@ from utils import utils
 from csv import reader
 from sys import exit
 
-COOKIES = "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
+COOKIES = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data"
 
 if utils.check_wd():
     print(

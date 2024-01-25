@@ -14,12 +14,12 @@ def check_wd() -> bool:
     from csv import writer
     from os import listdir, mkdir
 
-    dir = listdir("..")
+    dir = listdir("./")
     if "pictures" not in dir:
-        mkdir("../pictures")
+        mkdir("pictures")
     if "recipients" not in dir:
-        mkdir("../recipients")
-        with open("../recipients/recipients.csv", "w") as f:
+        mkdir("recipients")
+        with open("recipients/recipients.csv", "w") as f:
             writer = writer(f)
             writer.writerow(["first_name", "last_name", "phone_number"])
     return True
