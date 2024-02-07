@@ -1,7 +1,7 @@
-# import logger # TODO set up logging once everything is final
 from utils import utils
 from csv import reader
 from sys import exit
+from os import listdir
 
 COOKIES = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data"
 
@@ -18,26 +18,25 @@ if utils.check_wd():
     with open("recipients/recipients.csv", "r") as file:
         csv = reader(file)
         recipients = list(map(lambda x: x[2], list(csv)))[1:]
-    confirm_recipients = input(
-        f"Are you sure you want to send messages to {len(recipients)} recipients?\n"
+    print(f"Are you sure you want to send messages to {len(recipients)} recipients?\n")
+    pics_flow = input(
+            "Type yes/no if you want to send pictures in the 'pictures' folder along with the message:\n"
     ).lower()
-    if confirm_recipients == "yes":
-        pics_flow = input(
-            "Type yes if you want to send pictures in the 'pictures' folder along with the message:\n"
-        ).lower()
-        if pics_flow == "yes":
-            utils.send_message(
-                cookies_path=COOKIES,
-                include_pics=True,
-                message=input("Enter your message: "),
-                wait_time=5,
-            )
-        else:
-            utils.send_message(
-                cookies_path=COOKIES,
-                include_pics=False,
-                message=input("Enter your message: "),
-                wait_time=5,
-            )
+    if pics_flow == "yes":
+        print(f"Sending {len(listdir("./pictures/"))} picture(s): {listdir("./pictures/")}")
+        utils.send_message(
+            cookies_path=COOKIES,
+            include_pics=True,
+            message=input("Enter your message: "),
+            wait_time=5,
+        )
     else:
-        exit("Please try again and type 'yes' to start the program")
+        utils.send_message(
+            cookies_path=COOKIES,
+            include_pics=False,
+            message=input("Enter your message: "),
+            wait_time=5,
+        )
+    utils.logs_cleanup("logs")
+else:
+    exit("Please try again and type 'yes' to start the program")
