@@ -5,11 +5,6 @@ def clean_number(number: str) -> str:
         return number
 
 
-def open_page(driver, base_url: str, receiver: str):
-    url = f"{base_url}phone={clean_number(receiver)}"
-    return driver.get(url)
-
-
 def check_wd() -> bool:
     from csv import writer
     from os import listdir, mkdir
@@ -25,20 +20,6 @@ def check_wd() -> bool:
     if "logs" not in dir:
         mkdir("logs")
     return True
-
-
-def logs_cleanup(relative_dir: str) -> None:
-    from datetime import datetime, timedelta
-    from os import path, listdir
-
-    files = listdir(relative_dir)
-    for file in files:
-        file_path = path.join(relative_dir, file)
-        if path.isfile(file_path):
-            modified_time = datetime.fromtimestamp(path.getmtime(file_path))
-            if datetime.now() - modified_time > timedelta(days=30):
-                # Delete the file
-                path.unlink(file_path)
 
 
 def setup_logger():
@@ -60,6 +41,23 @@ def setup_logger():
     logger.addHandler(file_handler)
 
     return logger
+
+
+def logs_cleanup(relative_dir: str) -> None:
+    from datetime import datetime, timedelta
+    from os import path, listdir
+
+    files = listdir(relative_dir)
+    logger = setup_logger()
+    logger.info(f"Checking if logs need to be cleaned up in: {relative_dir}")
+    for file in files:
+        file_path = path.join(relative_dir, file)
+        if path.isfile(file_path):
+            modified_time = datetime.fromtimestamp(path.getmtime(file_path))
+            if datetime.now() - modified_time > timedelta(days=30):
+                # Delete the file
+                path.unlink(file_path)
+                logger.info(f"Deleted: {file_path}")
 
 
 def log_to_csv(receiver: str, message: str, pictures: list) -> None:
@@ -122,6 +120,11 @@ def log_to_csv(receiver: str, message: str, pictures: list) -> None:
                     f"{pictures}",
                 ]
             )
+
+
+def open_page(driver, base_url: str, receiver: str):
+    url = f"{base_url}phone={clean_number(receiver)}"
+    return driver.get(url)
 
 
 def copy_image(relative_path: str) -> None:
