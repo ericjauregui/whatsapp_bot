@@ -23,7 +23,7 @@ if utils.check_wd():
             "Type yes/no if you want to send pictures in the 'pictures' folder along with the message:\n"
     ).lower()
     if pics_flow == "yes":
-        print(f"Sending {len(listdir("./pictures/"))} picture(s): {listdir("./pictures/")}")
+        print(f"Sending {len(listdir('./pictures/'))} picture(s): {listdir('./pictures/')}")
         utils.send_message(
             cookies_path=COOKIES,
             include_pics=True,
