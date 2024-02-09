@@ -265,21 +265,21 @@ def send_message(
                 print(
                     f"{len(listdir('pictures'))} pictures sent successfully to {phone}!"
                 )
-                log_to_csv(
-                    receiver=f"+{phone}",
-                    message=message,
-                    pictures=listdir("pictures/"),
-                )
+                # log_to_csv(
+                #     receiver=f"+{phone}",
+                #     message=message,
+                #     pictures=listdir("pictures/"),
+                # )
             else:
                 print(f"'{message}' sent successfully to {phone}!")
                 logger.info(
                     f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
                 )
-                log_to_csv(
-                    receiver=f"+{phone}",
-                    message=message,
-                    pictures=["No pictures selected"],
-                )
+                # log_to_csv(
+                #     receiver=f"+{phone}",
+                #     message=message,
+                #     pictures=["No pictures selected"],
+                # )
         driver.quit()
 
         return f"{len(receivers)} messages sent successfully!"
