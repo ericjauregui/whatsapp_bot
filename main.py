@@ -18,12 +18,16 @@ if utils.check_wd():
     with open("recipients/recipients.csv", "r") as file:
         csv = reader(file)
         recipients = list(map(lambda x: x[2], list(csv)))[1:]
-    print(f"Are you sure you want to send messages to {len(recipients)} recipients?\n")
+    print(
+        f"Are you sure you want to send messages to {len(recipients)} recipients?\n"
+    )
     pics_flow = input(
-            "Type yes/no if you want to send pictures in the 'pictures' folder along with the message:\n"
+        "Type yes/no if you want to send pictures in the 'pictures' folder along with the message:\n"
     ).lower()
     if pics_flow == "yes":
-        print(f"Sending {len(listdir('./pictures/'))} picture(s): {listdir('./pictures/')}")
+        print(
+            f"Sending {len(listdir('./pictures/'))} picture(s): {listdir('./pictures/')}"
+        )
         utils.send_message(
             cookies_path=COOKIES,
             include_pics=True,
@@ -40,3 +44,7 @@ if utils.check_wd():
     utils.logs_cleanup("logs")
 else:
     exit("Please try again and type 'yes' to start the program")
+
+# how to handle if phone number is invalid error shows or a timeout being a indicator to move to next step and take screenshot at this point to see issue
+# try this number --> does not exist: 18136437919
+# maybe investigate how pywhatkit does it?
