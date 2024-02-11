@@ -44,7 +44,6 @@ if utils.check_wd():
     utils.logs_cleanup("logs")
 else:
     exit("Please try again and type 'yes' to start the program")
-
 # how to handle if phone number is invalid error shows or a timeout being a indicator to move to next step and take screenshot at this point to see issue
 # try this number --> does not exist: 18136437919
 # maybe investigate how pywhatkit does it?
