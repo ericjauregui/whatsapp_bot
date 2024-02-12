@@ -226,60 +226,73 @@ def send_message(
         txt_xpath = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
         send_pic_xpath = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'
         driver = webdriver.Chrome(options=chrome_options)
-        for phone in receivers:
+        for i, phone in enumerate(receivers):
             phone = str(phone)
             wait = WebDriverWait(driver, process_timeout)
             open_page(driver=driver, base_url=base_url, receiver=phone)
-            sleep(wait_time)
-            txt_box = wait.until(
-                EC.presence_of_element_located((By.XPATH, txt_xpath))
-            )
-            txt_box.click()
-            txt_box.send_keys(message, Keys.ENTER)
-            logger.info(
-                f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
-            )
-            sleep(wait_time)
-            if include_pics:
-                logger.info(
-                    f"\n Receiver: +{phone} \n Picture option selected"
-                )
-                for pic in listdir("pictures"):
-                    copy_image(f"pictures/{pic}")
-                    pic_txt_box = wait.until(
-                        EC.presence_of_element_located((By.XPATH, txt_xpath))
-                    )
-                    pic_txt_box.click()
-                    paste_image(pic_txt_box)
-                    sleep(wait_time)
-                    send_pic = wait.until(
-                        EC.presence_of_element_located(
-                            (By.XPATH, send_pic_xpath)
-                        )
-                    )
-                    send_pic.click()
-                    logger.info(
-                        f"\n Receiver: +{phone}\n Picture: {pic}\n Sent Successfully!"
-                    )
-                    sleep(wait_time)
-                print(
-                    f"{len(listdir('pictures'))} pictures sent successfully to {phone}!"
-                )
-                # log_to_csv(
-                #     receiver=f"+{phone}",
-                #     message=message,
-                #     pictures=listdir("pictures/"),
-                # )
+            if i == 0:
+                sleep(15)
             else:
-                print(f"'{message}' sent successfully to {phone}!")
+                sleep(wait_time)
+            # Check if the phone number is registered on WhatsApp
+            if driver.find_elements_by_xpath(txt_xpath).__len__() > 0:
+                txt_box = wait.until(
+                    EC.presence_of_element_located((By.XPATH, txt_xpath))
+                )
+                txt_box.click()
+                txt_box.send_keys(message, Keys.ENTER)
                 logger.info(
                     f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
                 )
-                # log_to_csv(
-                #     receiver=f"+{phone}",
-                #     message=message,
-                #     pictures=["No pictures selected"],
-                # )
+                sleep(wait_time)
+                if include_pics:
+                    logger.info(
+                        f"\n Receiver: +{phone} \n Picture option selected"
+                    )
+                    for pic in listdir("pictures"):
+                        copy_image(f"pictures/{pic}")
+                        pic_txt_box = wait.until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, txt_xpath)
+                            )
+                        )
+                        pic_txt_box.click()
+                        paste_image(pic_txt_box)
+                        sleep(wait_time)
+                        send_pic = wait.until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, send_pic_xpath)
+                            )
+                        )
+                        send_pic.click()
+                        logger.info(
+                            f"\n Receiver: +{phone}\n Picture: {pic}\n Sent Successfully!"
+                        )
+                        sleep(wait_time)
+                    print(
+                        f"{len(listdir('pictures'))} pictures sent successfully to {phone}!"
+                    )
+                    log_to_csv(
+                        receiver=f"+{phone}",
+                        message=message,
+                        pictures=listdir("pictures/"),
+                    )
+                else:
+                    print(f"'{message}' sent successfully to {phone}!")
+                    logger.info(
+                        f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
+                    )
+                    log_to_csv(
+                        receiver=f"+{phone}",
+                        message=message,
+                        pictures=["No pictures selected"],
+                    )
+            else:
+                print(f"Phone number +{phone} not valid!")
+                logger.info(
+                    f"\n Receiver: +{phone}\n Error: Phone number not valid!"
+                )
+                continue
         driver.quit()
 
         return f"{len(receivers)} messages sent successfully!"
