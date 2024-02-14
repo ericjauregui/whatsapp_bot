@@ -14,7 +14,7 @@ if system == "darwin":
         "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
     )
 else:
-    exit("Platform not supported. Please use Windows or Mac OS!")
+    cookies = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data"
 
 if utils.check_wd():
     print(
