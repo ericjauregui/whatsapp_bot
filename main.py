@@ -5,11 +5,11 @@ from os import listdir
 from platform import system as sys
 
 
-_system = sys().lower()
+system = sys().lower()
 
-if _system == "windows":
+if system == "windows":
     cookies = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data"
-if _system == "darwin":
+if system == "darwin":
     cookies = (
         "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
     )
