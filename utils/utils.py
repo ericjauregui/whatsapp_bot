@@ -207,6 +207,7 @@ def send_message(
     from selenium.webdriver.common.keys import Keys
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
+    from selenium.common.exceptions import NoSuchElementException
     from csv import reader
     from os import listdir
 
@@ -231,11 +232,12 @@ def send_message(
             wait = WebDriverWait(driver, process_timeout)
             open_page(driver=driver, base_url=base_url, receiver=phone)
             if i == 0:
-                sleep(15)
+                sleep(25)
             else:
                 sleep(wait_time)
             # Check if the phone number is registered on WhatsApp
-            if driver.find_elements_by_xpath(txt_xpath).__len__() > 0:
+            try:
+                driver.find_element_by_xpath(txt_xpath)
                 txt_box = wait.until(
                     EC.presence_of_element_located((By.XPATH, txt_xpath))
                 )
@@ -287,7 +289,7 @@ def send_message(
                         message=message,
                         pictures=["No pictures selected"],
                     )
-            else:
+            except NoSuchElementException:
                 print(f"Phone number +{phone} not valid!")
                 logger.info(
                     f"\n Receiver: +{phone}\n Error: Phone number not valid!"
