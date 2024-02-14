@@ -237,7 +237,7 @@ def send_message(
                 sleep(wait_time)
             # Check if the phone number is registered on WhatsApp
             try:
-                driver.find_element_by_xpath(txt_xpath)
+                driver.find_element(By.XPATH, txt_xpath)
                 txt_box = wait.until(
                     EC.presence_of_element_located((By.XPATH, txt_xpath))
                 )
