@@ -43,14 +43,14 @@ if utils.check_wd():
             cookies_path=cookies,
             include_pics=True,
             message=input("Enter your message: "),
-            wait_time=5,
+            wait_time=7,
         )
     else:
         utils.send_message(
             cookies_path=cookies,
             include_pics=False,
             message=input("Enter your message: "),
-            wait_time=5,
+            wait_time=7,
         )
     utils.logs_cleanup("logs")
 else:
