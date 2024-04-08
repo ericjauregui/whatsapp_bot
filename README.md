@@ -14,7 +14,7 @@ This is a WhatsApp bot that allows you to send messages to multiple recipients u
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/ericjauregui/whatsapp-bot.git
+   git clone https://github.com/ericjauregui/whatsapp_bot.git
    ```
 
 2. Install the required dependencies:
