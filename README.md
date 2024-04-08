@@ -20,7 +20,7 @@ This is a WhatsApp bot that allows you to send messages to multiple recipients u
 2. Install the required dependencies:
 
    ```bash
-   pip install -r pip_requirements.txt
+   pip install -r requirements.txt
    ```
 
 3. Set up the recipients:
