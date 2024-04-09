@@ -208,6 +208,7 @@ def send_message(
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.common.exceptions import NoSuchElementException
+    from webdriver_manager.chrome import ChromeDriverManager
     from csv import reader
     from os import listdir
 
@@ -226,7 +227,9 @@ def send_message(
         chrome_options.add_argument("--disable-application-cache=0")
         txt_xpath = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
         send_pic_xpath = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'
-        driver = webdriver.Chrome(options=chrome_options)
+        driver = webdriver.Chrome(
+            ChromeDriverManager().install(), options=chrome_options
+        )
         for i, phone in enumerate(receivers):
             phone = str(phone)
             wait = WebDriverWait(driver, process_timeout)
