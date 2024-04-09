@@ -1,15 +1,15 @@
 ```markdown
 # WhatsApp Bot
 
-This is a WhatsApp bot that allows you to send messages to multiple recipients using WhatsApp Web.
+This repository contains the code for a WhatsApp bot built with Python. The bot can send automated messages to multiple recipients using WhatsApp Web. It also supports sending pictures along with the messages.
 
 ## Prerequisites
 
 - Python 3.x
-- Google Chrome with WhatsApp Web signed in
-- Latest chromedriver (https://chromedriver.chromium.org/downloads) and added to PATH
+- Google Chrome Browser
+- Signed into WhatsApp Web on Google Chrome after running the first time
 
-## Setup
+## Installation
 
 1. Clone the repository:
 
@@ -17,44 +17,36 @@ This is a WhatsApp bot that allows you to send messages to multiple recipients u
    git clone https://github.com/ericjauregui/whatsapp_bot.git
    ```
 
-2. Install the required dependencies:
+2. Move to repo folder and install the required dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Set up the recipients:
-
-   - Create the `recipients/recipients.csv` file.
-   - Fill in the contact details of the recipients you want to send messages to.
-
-4. Configure the bot:
-
-   - Open the `utils/utils.py` file.
-   - Update the `COOKIES` variable in 'main.py' with the path to your Google Chrome cookies file.
-
 ## Usage
 
-1. Run the bot:
-
+1. Ensure you're signed into WhatsApp Web on your computer.
+2. Run the bot for first time setup:
+   ```bash
+   python main.py
+   ```
+3. Place pictures you want to send in the `pictures` folder.
+4. Fill in the contact details of the recipients in the `recipients.csv` file located in the `recipients` folder that is generated after the first run.
+5. Run the bot for full use:
    ```bash
    python main.py
    ```
 
-2. Follow the on-screen instructions:
+6. Follow the on-screen instructions to send messages. You can choose whether to include pictures from the `pictures` folder along with the messages.
 
-   - Confirm the number of recipients you want to send messages to.
-   - Choose whether to include pictures from the `pictures` folder.
-   - Enter your message.
+## Note
 
-3. Let the bot run without interruption.
+- Don't touch your computer while the bot is running!
+- You can stop the program by pressing `ctrl+c`.
 
-## Folder Structure
+## Contributing
 
-- `recipients/`: Contains the recipients.csv file with contact details.
-- `pictures/`: Place pictures you want to send here.
-- `utils/`: Contains the utils.py file with utility functions.
-- `main.py`: Main script to run the bot.
+Contributions are welcome! Please fork the repository and create a pull request with your changes.
 
 ## Contact
 
