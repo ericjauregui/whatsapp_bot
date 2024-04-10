@@ -45,7 +45,7 @@ def setup_logger():
 
 def logs_cleanup(relative_dir: str) -> None:
     from datetime import datetime, timedelta
-    from os import path, listdir
+    from os import path, listdir, remove
 
     files = listdir(relative_dir)
     logger = setup_logger()
@@ -56,7 +56,7 @@ def logs_cleanup(relative_dir: str) -> None:
             modified_time = datetime.fromtimestamp(path.getmtime(file_path))
             if datetime.now() - modified_time > timedelta(days=30):
                 # Delete the file
-                path.unlink(file_path)
+                remove(file_path)
                 logger.info(f"Deleted: {file_path}")
 
 
