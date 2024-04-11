@@ -7,17 +7,17 @@ def clean_number(number: str) -> str:
 
 def check_wd() -> bool:
     from csv import writer
-    from os import listdir, mkdir
+    from os import path, mkdir, listdir
 
-    dir = listdir(".")
-    if "pictures" not in dir:
+    cwd = listdir(path.dirname(__file__))
+    if "pictures" not in cwd:
         mkdir("pictures")
-    if "recipients" not in dir:
+    if "recipients" not in cwd:
         mkdir("recipients")
         with open("recipients/recipients.csv", "x") as f:
             writer = writer(f)
             writer.writerow(["first_name", "last_name", "phone_number"])
-    if "logs" not in dir:
+    if "logs" not in cwd:
         mkdir("logs")
     return True
 
