@@ -5,23 +5,6 @@ def clean_number(number: str) -> str:
         return number
 
 
-def check_wd() -> bool:
-    from csv import writer
-    from os import path, mkdir, listdir
-
-    cwd = listdir(path.dirname(__file__))
-    if "pictures" not in cwd:
-        mkdir("pictures")
-    if "recipients" not in cwd:
-        mkdir("recipients")
-        with open("recipients/recipients.csv", "x") as f:
-            writer = writer(f)
-            writer.writerow(["first_name", "last_name", "phone_number"])
-    if "logs" not in cwd:
-        mkdir("logs")
-    return True
-
-
 def setup_logger():
     import logging
     from datetime import date
@@ -43,6 +26,31 @@ def setup_logger():
     return logger
 
 
+def check_wd(file_path: str) -> bool:
+    from csv import writer
+    from os import mkdir, listdir
+
+    logger = setup_logger()
+    logger.info("\n Checking if all required files are available!")
+    list_dir = listdir(file_path)
+    req_dirs = ["pictures", "recipients", "logs", "test"]
+    not_found = [dir_ for dir_ in req_dirs if dir_ not in list_dir]
+    if not_found:
+        for dir_ in not_found:
+            mkdir(dir_)
+            logger.info(f"\n {dir_} folder not found, created folder!")
+            if dir_ == "recipients":
+                with open("recipients/recipients.csv", "x") as f:
+                    writer = writer(f)
+                    writer.writerow(
+                        ["first_name", "last_name", "phone_number"]
+                    )
+                logger.info("\n Set up recipients csv file!")
+        return True
+    else:
+        return True
+
+
 def logs_cleanup(relative_dir: str) -> None:
     from datetime import datetime, timedelta
     from os import path, listdir, remove
@@ -58,68 +66,6 @@ def logs_cleanup(relative_dir: str) -> None:
                 # Delete the file
                 remove(file_path)
                 logger.info(f"Deleted: {file_path}")
-
-
-def log_to_csv(receiver: str, message: str, pictures: list) -> None:
-    from os import path, mkdir
-    from datetime import date, datetime
-    from csv import writer, reader
-
-    today_ = date.today()
-    today_ = str(today_).replace("-", "_")
-    now_ = str(datetime.now()).replace(" ", "_")
-    if path.exists(f"logs/whatsapp_logs_{today_}.csv"):
-        with open(f"logs/whatsapp_logs_{today_}.csv", "r+") as log:
-            writer = writer(log)
-            reader = reader(log)
-            csv_file = [row for row in reader]
-            last_row_ = csv_file[-1]
-            last_run_date = datetime.strptime(
-                last_row_[1].split("_")[0], "%Y-%m-%d"
-            ).date()
-            if last_run_date == date.today():
-                writer.writerow(
-                    [
-                        str(int(last_row_[0])),
-                        f"{now_}",
-                        f"{receiver}",
-                        f"{message}",
-                        f"{pictures}",
-                    ]
-                )
-            else:
-                writer.writerow(
-                    [
-                        f"{str(int(last_row_[0]) + 1)}",
-                        f"{now_}",
-                        f"{receiver}",
-                        f"{message}",
-                        f"{pictures}",
-                    ]
-                )
-    else:
-        if not path.exists("logs"):
-            mkdir("logs")
-        with open(f"logs/whatsapp_logs_{today_}.csv", "x") as f:
-            writer = writer(f)
-            writer.writerow(
-                [
-                    "session_counter",
-                    "time_sent",
-                    "receiver",
-                    "message",
-                    "pictures",
-                ]
-            )
-            writer.writerow(
-                [
-                    f"{str(1)}",
-                    f"{str(now_)}",
-                    f"{receiver}",
-                    f"{message}",
-                    f"{pictures}",
-                ]
-            )
 
 
 def open_page(driver, base_url: str, receiver: str):
@@ -278,21 +224,11 @@ def send_message(
                     print(
                         f"{len(listdir('pictures'))} pictures sent successfully to {phone}!"
                     )
-                    # log_to_csv(
-                    # receiver=f"+{phone}",
-                    # message=message,
-                    # pictures=listdir("pictures/"),
-                    # )
                 else:
                     print(f"'{message}' sent successfully to {phone}!")
                     logger.info(
                         f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
                     )
-                    # log_to_csv(
-                    # receiver=f"+{phone}",
-                    # message=message,
-                    # pictures=["No pictures selected"],
-                    # )
             except NoSuchElementException:
                 print(f"Phone number +{phone} not valid!")
                 logger.info(

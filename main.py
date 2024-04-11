@@ -1,7 +1,7 @@
 from utils import utils
 from csv import reader
 from sys import exit
-from os import listdir
+from os import listdir, path
 from platform import system as sys
 
 
@@ -16,7 +16,7 @@ if system == "darwin":
 else:
     cookies = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data"
 
-if utils.check_wd():
+if utils.check_wd(path.dirname(path.abspath(__file__))):
     print(
         """
           1. Please ensure you're signed into whatsapp web on this computer
