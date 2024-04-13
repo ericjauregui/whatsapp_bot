@@ -33,7 +33,7 @@ def check_wd(file_path: str) -> bool:
     logger = setup_logger()
     logger.info("\n Checking if all required files are available!")
     list_dir = listdir(file_path)
-    req_dirs = ["pictures", "recipients", "logs", "test"]
+    req_dirs = ["pictures", "recipients", "logs"]
     not_found = [dir_ for dir_ in req_dirs if dir_ not in list_dir]
     if not_found:
         for dir_ in not_found:
