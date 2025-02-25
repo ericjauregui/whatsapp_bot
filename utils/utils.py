@@ -28,7 +28,7 @@ def setup_logger():
 
 def check_wd(file_path: str) -> bool:
     from csv import writer
-    from os import mkdir, listdir
+    from os import listdir, mkdir
 
     logger = setup_logger()
     logger.info("\n Checking if all required files are available!")
@@ -53,7 +53,7 @@ def check_wd(file_path: str) -> bool:
 
 def logs_cleanup(relative_dir: str) -> None:
     from datetime import datetime, timedelta
-    from os import path, listdir, remove
+    from os import listdir, path, remove
 
     files = listdir(relative_dir)
     logger = setup_logger()
@@ -75,24 +75,25 @@ def open_page(driver, base_url: str, receiver: str):
 
 def copy_image(relative_path: str) -> None:
     """Copy the Image to Clipboard based on the Platform"""
-    from platform import system as sys
     from os import system
+    from platform import system as sys
 
     _system = sys().lower()
     if _system == "windows":
         from io import BytesIO
 
+        from PIL import Image
+
         #        system(
         #            "pip install pywin32"
         #        )  # building on macbook so unable to install pywin32
         from win32clipboard import (
-            OpenClipboard,
-            EmptyClipboard,
-            SetClipboardData,
-            CloseClipboard,
             CF_DIB,
+            CloseClipboard,
+            EmptyClipboard,
+            OpenClipboard,
+            SetClipboardData,
         )
-        from PIL import Image
 
         image = Image.open(relative_path)
         output = BytesIO()
@@ -119,6 +120,7 @@ def copy_image(relative_path: str) -> None:
 def paste_image(input_field) -> None:
     """Paste the Image from the Clipboard based on the Platform"""
     from platform import system as sys
+
     from selenium.webdriver.common.keys import Keys
 
     _system = sys().lower()
@@ -132,6 +134,7 @@ def paste_image(input_field) -> None:
 
 
 def send_message(
+    driver_path: str,
     cookies_path: str,
     base_url: str = "https://web.whatsapp.com/send?",
     receivers_path: str = "recipients/recipients.csv",
@@ -146,17 +149,17 @@ def send_message(
         2. Have pictures you want to send in the pictures folder
         3. Have all contacts filled in the recipients.csv file
     """
-    from time import sleep
-    from selenium import webdriver
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.chrome.options import Options
-    from selenium.webdriver.common.keys import Keys
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
-    from selenium.common.exceptions import NoSuchElementException
-    from webdriver_manager.chrome import ChromeDriverManager
     from csv import reader
     from os import listdir
+    from time import sleep
+
+    from selenium import webdriver
+    from selenium.common.exceptions import NoSuchElementException
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.firefox.service import Service as FirefoxService
 
     with open(receivers_path, "r") as file:
         csv = reader(file)
@@ -167,15 +170,13 @@ def send_message(
     )
     try:
         # initialize webdriver args
-        chrome_options = Options()
-        chrome_options.add_argument(f"--user-data-dir={cookies_path}")
-        # chrome_options.add_argument(f"--profile-directory={profile}")
-        chrome_options.add_argument("--disable-application-cache=0")
+        firefox_options = webdriver.FirefoxOptions()
+        firefox_options.add_argument(f"--user-data-dir={cookies_path}")
+        firefox_options.add_argument("--disable-application-cache=0")
         txt_xpath = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
         send_pic_xpath = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'
-        driver = webdriver.Chrome(
-            ChromeDriverManager().install(), options=chrome_options
-        )
+        service = FirefoxService(executable_path=driver_path)
+        driver = webdriver.Firefox(service=service, options=firefox_options)
         for i, phone in enumerate(receivers):
             phone = str(phone)
             wait = WebDriverWait(driver, process_timeout)
@@ -239,7 +240,9 @@ def send_message(
 
         return f"{len(receivers)} messages sent successfully!"
     except Exception as e:
-        driver.quit()
         logger.info(f"Script failure | error: {e}")
         print(e)
         return f"Error: {e}"
+    finally:
+        driver.quit()
+        return None

@@ -1,20 +1,10 @@
 from utils import utils
 from csv import reader
 from sys import exit
-from os import listdir, path
-from platform import system as sys
+from os import listdir, path, environ
 
-
-system = sys().lower()
-
-if system == "windows":
-    cookies = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data"
-if system == "darwin":
-    cookies = (
-        "/Users/ericj/Library/Application Support/Google/Chrome/Profile 1"
-    )
-else:
-    cookies = "C:/Users/Admin/AppData/Local/Google/Chrome/User Data"
+cookies = environ.get('FIREFOX_COOKIES_PATH')
+driver = environ.get('FIREFOX_DRIVER_PATH')
 
 if utils.check_wd(path.dirname(path.abspath(__file__))):
     print(
@@ -40,6 +30,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             f"Sending {len(listdir('./pictures/'))} picture(s): {listdir('./pictures/')}"
         )
         utils.send_message(
+            driver_path=driver,
             cookies_path=cookies,
             include_pics=True,
             message=input("Enter your message: "),
@@ -47,6 +38,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
         )
     else:
         utils.send_message(
+            driver_path=driver,
             cookies_path=cookies,
             include_pics=False,
             message=input("Enter your message: "),
