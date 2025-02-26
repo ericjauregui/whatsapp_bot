@@ -218,7 +218,7 @@ def send_message(
                             )
                             continue
                         else:
-                            attach_xpath = """//div[@data-icon='clip']"""
+                            attach_xpath = """//button[contains(@title, 'Attach') and @type='button']"""
                             attach = wait.until(
                                 EC.visibility_of_element_located(
                                     (By.XPATH, attach_xpath)
@@ -226,7 +226,7 @@ def send_message(
                             )
                             attach.click()
                             sleep(wait_time)
-                            pic_attach_xpath = """//input[@accept='image/*"""
+                            pic_attach_xpath = """//input[@type='file' and contains(@accept, 'image')]"""
                             pic_attach = wait.until(
                                 EC.visibility_of_element_located(
                                     (By.XPATH, pic_attach_xpath)
