@@ -8,12 +8,14 @@ def clean_number(number: str) -> str:
 def setup_logger():
     import logging
     from datetime import date
+    from os import makedirs
 
     # Create a logger
     logger = logging.getLogger(f"{__name__}")
     logger.setLevel(logging.INFO)
 
-    # Create a file handler
+    # Create a file handler and check if folder exists
+    os.makedirs("logs", exist_ok=True)
     file_handler = logging.FileHandler(f"logs/whatsapp_bot_{date.today()}.log")
 
     # Create a formatter and add it to the file handler
