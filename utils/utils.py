@@ -81,6 +81,7 @@ def copy_image(relative_path: str) -> None:
     from platform import system as sys
 
     _system = sys().lower()
+    suffix = relative_path.split(".")[-1].lower()
     if _system == "windows":
         from io import BytesIO
         from PIL import Image
@@ -103,7 +104,6 @@ def copy_image(relative_path: str) -> None:
         CloseClipboard()
 
     elif _system == "darwin":
-        suffix = relative_path.split(".")[-1].lower()
         if suffix in ("jpg", "jpeg"):
             system(
                 f"osascript -e 'set the clipboard to (read (POSIX file \"{relative_path}\") as JPEG picture)'"
