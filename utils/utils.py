@@ -113,6 +113,14 @@ def copy_image(relative_path: str) -> None:
             )
         else:
             raise Exception(f"File format {suffix} is not supported!")
+
+    elif _system == "linux":
+        if suffix in ("jpg", "jpeg"):
+            system(
+                f"xclip -selection clipboard -t image/jpeg -i {relative_path}"
+            )
+        else:
+            raise Exception(f"File format {suffix} is not supported")
     else:
         raise Exception(f"Unsupported System: {_system}")
 
@@ -128,6 +136,8 @@ def paste_image(input_field) -> None:
         input_field.send_keys(Keys.CONTROL, "v")
     elif _system == "darwin":
         input_field.send_keys(Keys.COMMAND, "v")
+    elif _system == "linux":
+        input_field.send_keys(Keys.CONTROL, "v")
     else:
         raise Exception(f"Unsupported System: {_system}")
     return None
