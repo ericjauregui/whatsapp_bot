@@ -26,11 +26,11 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
         f"Are you sure you want to send messages to {len(recipients)} recipients?\n"
     )
     pics_flow = input(
-        "Type yes/no if you want to send pictures in the 'pictures' folder along with the message:\n"
+        "Type yes/no if you want to send pictures in the 'assets' folder along with the message:\n"
     ).lower()
     if pics_flow == "yes":
         print(
-            f"Sending {len(listdir('./pictures/'))} picture(s): {listdir('./pictures/')}"
+            f"Sending {len(listdir('assets/'))} picture(s): {listdir('assets/')}"
         )
         utils.send_message(
             driver_path=driver,

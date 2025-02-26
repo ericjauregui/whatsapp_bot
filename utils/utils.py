@@ -35,7 +35,7 @@ def check_wd(file_path: str) -> bool:
     logger = setup_logger()
     logger.info("\n Checking if all required files are available!")
     list_dir = listdir(file_path)
-    req_dirs = ["pictures", "recipients", "logs"]
+    req_dirs = ["assets", "recipients", "logs"]
     not_found = [dir_ for dir_ in req_dirs if dir_ not in list_dir]
     if not_found:
         for dir_ in not_found:
@@ -217,8 +217,8 @@ def send_message(
                     logger.info(
                         f"\n Receiver: +{phone} \n Picture option selected"
                     )
-                    for pic in listdir("pictures"):
-                        copy_image(f"pictures/{pic}")
+                    for pic in listdir("assets"):
+                        copy_image(f"assets/{pic}")
                         pic_txt_box = wait.until(
                             EC.presence_of_element_located(
                                 (By.XPATH, txt_xpath)
@@ -238,7 +238,7 @@ def send_message(
                         )
                         sleep(wait_time)
                     print(
-                        f"{len(listdir('pictures'))} pictures sent successfully to {phone}!"
+                        f"{len(listdir('assets'))} pictures sent successfully to {phone}!"
                     )
                 else:
                     print(f"'{message}' sent successfully to {phone}!")
