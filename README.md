@@ -1,4 +1,3 @@
-```markdown
 # WhatsApp Bot
 
 This repository contains the code for a WhatsApp bot built with Python. The bot can send automated messages to multiple recipients using WhatsApp Web. It also supports sending pictures along with the messages.
@@ -6,8 +5,9 @@ This repository contains the code for a WhatsApp bot built with Python. The bot 
 ## Prerequisites
 
 - Python 3.x
-- Google Chrome Browser
-- Signed into WhatsApp Web on Google Chrome after running the first time
+- Firefox
+- Firefox driver (geckodriver)
+- Signed into WhatsApp Web
 
 ## Installation
 
@@ -39,6 +39,16 @@ This repository contains the code for a WhatsApp bot built with Python. The bot 
 
 6. Follow the on-screen instructions to send messages. You can choose whether to include pictures from the `pictures` folder along with the messages.
 
+## Firefox Setup
+
+The bot now uses Firefox. Make sure that:
+1. You have Firefox installed.
+2. You have the Firefox driver (geckodriver) installed and referenced in your environment or .env file:
+   - FIREFOX_DRIVER_PATH='/usr/local/bin/geckodriver'
+   - FIREFOX_COOKIES_PATH='/path/to/your/firefox/profile'
+
+Set these environment variables or update the .env file accordingly before running the bot.
+
 ## Note
 
 - Don't touch your computer while the bot is running!
@@ -51,4 +61,3 @@ Contributions are welcome! Please fork the repository and create a pull request 
 ## Contact
 
 For any questions or inquiries, please contact [eric.jauregui@ymail.com](mailto:eric.jauregui@ymail.com).
-```
