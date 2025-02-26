@@ -75,7 +75,7 @@ def open_page(driver, base_url: str, receiver: str):
     return driver.get(url)
 
 
-def copy_image(relative_path: str) -> None:
+def copy_image(relative_path: str) -> bool:
     """Copy the Image to Clipboard based on the Platform"""
     from os import system
     from platform import system as sys
@@ -102,22 +102,19 @@ def copy_image(relative_path: str) -> None:
         EmptyClipboard()
         SetClipboardData(CF_DIB, data)
         CloseClipboard()
+        return True
 
     elif _system == "darwin":
         if suffix in ("jpg", "jpeg"):
             system(
                 f"osascript -e 'set the clipboard to (read (POSIX file \"{relative_path}\") as JPEG picture)'"
             )
+            return True
         else:
             raise Exception(f"File format {suffix} is not supported!")
 
     elif _system == "linux":
-        if suffix in ("jpg", "jpeg"):
-            system(
-                f"xclip -selection clipboard -t image/jpeg -i {relative_path}"
-            )
-        else:
-            raise Exception(f"File format {suffix} is not supported")
+        return False
     else:
         raise Exception(f"Unsupported System: {_system}")
 
@@ -157,7 +154,7 @@ def send_message(
         3. Have all contacts filled in the recipients.csv file
     """
     from csv import reader
-    from os import listdir
+    from os import listdir, path
     from time import sleep
 
     from selenium import webdriver
@@ -215,7 +212,27 @@ def send_message(
                         f"\n Receiver: +{phone} \n Picture option selected"
                     )
                     for pic in listdir("assets"):
-                        copy_image(f"assets/{pic}")
+                        if copy_image(f"assets/{pic}"):
+                            logger.info(
+                                f"\n Copied successfully: {pic}"
+                            )
+                            continue
+                        else:
+                            attach_xpath = """//div[@data-icon='clip']"""
+                            attach = wait.until(
+                                EC.visibility_of_element_located(
+                                    (By.XPATH, attach_xpath)
+                                )
+                            )
+                            attach.click()
+                            sleep(wait_time)
+                            pic_attach_xpath = """//input[@accept='image/*"""
+                            pic_attach = wait.until(
+                                EC.visibility_of_element_located(
+                                    (By.XPATH, pic_attach_xpath)
+                                )
+                            )
+                            pic_attach.send_keys(f"{path.abspath(pic)}")
                         pic_txt_box = wait.until(
                             EC.visibility_of_element_located(
                                 (By.XPATH, txt_xpath)

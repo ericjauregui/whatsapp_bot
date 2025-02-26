@@ -37,7 +37,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             cookies_path=cookies,
             include_pics=True,
             message=input("Enter your message: "),
-            wait_time=15,
+            wait_time=15, # 7 seconds if running on mac
         )
     elif pics_flow == "no":
         utils.send_message(
@@ -45,7 +45,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             cookies_path=cookies,
             include_pics=False,
             message=input("Enter your message: "),
-            wait_time=15,
+            wait_time=10, # 7 seconds if running on mac
         )
     else:
         exit("Please try again and type 'yes' to start the program")
