@@ -193,7 +193,7 @@ def send_message(
             open_page(driver=driver, base_url=base_url, receiver=phone)
             logger.info(f"\n opened page for +{phone} at this url: {base_url}")
             if i == 0:
-                sleep(15)
+                sleep(30)
             else:
                 sleep(wait_time)
             # Check if the phone number is registered on WhatsApp
