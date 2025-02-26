@@ -181,8 +181,11 @@ def send_message(
     try:
         # initialize webdriver args
         firefox_options = webdriver.FirefoxOptions()
-        firefox_options.add_argument(f"--user-data-dir={cookies_path}")
-        firefox_options.add_argument("--disable-application-cache=0")
+        firefox_options.add_argument(f"--profile={cookies_path}")
+        firefox_options.set_preference('browser.cache.disk.enable', False)
+        firefox_options.set_preference('browser.cache.memory.enable', False)
+        firefox_options.set_preference('browser.cache.offline.enable', False)
+        firefox_options.set_preference('network.http.use-cache', False)
         txt_xpath = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
         send_pic_xpath = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'
         service = FirefoxService(executable_path=driver_path)

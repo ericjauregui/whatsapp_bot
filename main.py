@@ -1,10 +1,13 @@
 from utils import utils
 from csv import reader
 from sys import exit
-from os import listdir, path, environ
+from os import listdir, path, getenv
+from dotenv import load_dotenv
 
-cookies = environ.get('FIREFOX_COOKIES_PATH')
-driver = environ.get('FIREFOX_DRIVER_PATH')
+load_dotenv()
+
+driver = getenv('FIREFOX_DRIVER_PATH')
+cookies = getenv('FIREFOX_COOKIES_PATH')
 
 if utils.check_wd(path.dirname(path.abspath(__file__))):
     print(
