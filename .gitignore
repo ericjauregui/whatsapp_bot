@@ -1,6 +1,9 @@
 # Custom exclusions
 *.csv
 *.log
+*.jpg
+*.jpeg
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -36,7 +39,7 @@ secrets.py
 *DB.txt
 *.venvs
 recipients/*
-pictures/*
+assets/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
