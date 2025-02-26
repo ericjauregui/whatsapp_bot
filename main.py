@@ -39,7 +39,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             message=input("Enter your message: "),
             wait_time=12,
         )
-    else:
+    elif pics_flow == "no":
         utils.send_message(
             driver_path=driver,
             cookies_path=cookies,
@@ -47,6 +47,8 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             message=input("Enter your message: "),
             wait_time=12,
         )
+    else:
+        exit("Please try again and type 'yes' to start the program")
     utils.logs_cleanup("logs")
 else:
     exit("Please try again and type 'yes' to start the program")
