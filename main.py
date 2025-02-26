@@ -26,7 +26,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
         f"Are you sure you want to send messages to {len(recipients)} recipients?\n"
     )
     pics_flow = input(
-        "Type yes/no if you want to send pictures in the 'assets' folder along with the message:\n"
+        "Type yes/no if you want to send pictures in the 'assets' folder:\n"
     ).lower()
     if pics_flow == "yes":
         print(
@@ -37,7 +37,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             cookies_path=cookies,
             include_pics=True,
             message=input("Enter your message: "),
-            wait_time=12,
+            wait_time=10,
         )
     elif pics_flow == "no":
         utils.send_message(
@@ -45,7 +45,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             cookies_path=cookies,
             include_pics=False,
             message=input("Enter your message: "),
-            wait_time=12,
+            wait_time=7,
         )
     else:
         exit("Please try again and type 'yes' to start the program")

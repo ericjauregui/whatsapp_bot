@@ -83,12 +83,7 @@ def copy_image(relative_path: str) -> None:
     _system = sys().lower()
     if _system == "windows":
         from io import BytesIO
-
         from PIL import Image
-
-        #        system(
-        #            "pip install pywin32"
-        #        )  # building on macbook so unable to install pywin32
         from win32clipboard import (
             CF_DIB,
             CloseClipboard,
@@ -153,7 +148,7 @@ def send_message(
     include_pics: bool = False,
     message: str = " ",
     wait_time: int = 5,
-    process_timeout: int = 180,
+    process_timeout: int = 15,
 ) -> str:
     """Send Pictures or Messages to Multiple WhatsApp Contacts
     Requirements:
@@ -166,7 +161,7 @@ def send_message(
     from time import sleep
 
     from selenium import webdriver
-    from selenium.common.exceptions import NoSuchElementException
+    from selenium.common.exceptions import TimeoutException
     from selenium.webdriver.common.by import By
     from selenium.webdriver.common.keys import Keys
     from selenium.webdriver.support import expected_conditions as EC
@@ -188,27 +183,29 @@ def send_message(
         firefox_options.set_preference('browser.cache.memory.enable', False)
         firefox_options.set_preference('browser.cache.offline.enable', False)
         firefox_options.set_preference('network.http.use-cache', False)
-        txt_xpath = """//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"""
-        send_pic_xpath = '//*[@id="app"]/div/div[2]/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span'
+        txt_xpath = """//div[@contenteditable='true' and contains(@aria-label, 'Type a message') and @role='textbox']"""
+        send_pic_xpath = """//span[@data-icon='send']"""
         service = FirefoxService(executable_path=driver_path)
         driver = webdriver.Firefox(service=service, options=firefox_options)
         for i, phone in enumerate(receivers):
             phone = str(phone)
             wait = WebDriverWait(driver, process_timeout)
             open_page(driver=driver, base_url=base_url, receiver=phone)
+            logger.info(f"\n opened page for +{phone} at this url: {base_url}")
             if i == 0:
-                sleep(25)
+                sleep(15)
             else:
                 sleep(wait_time)
             # Check if the phone number is registered on WhatsApp
             try:
-                sleep(wait_time)
-                driver.find_element(By.XPATH, txt_xpath)
                 txt_box = wait.until(
-                    EC.presence_of_element_located((By.XPATH, txt_xpath))
+                    EC.visibility_of_element_located((By.XPATH, txt_xpath))
                 )
                 txt_box.click()
-                txt_box.send_keys(message, Keys.ENTER)
+                for char in message:
+                    txt_box.send_keys(char)
+                    sleep(0.1)
+                txt_box.send_keys(Keys.ENTER)
                 logger.info(
                     f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
                 )
@@ -220,7 +217,7 @@ def send_message(
                     for pic in listdir("assets"):
                         copy_image(f"assets/{pic}")
                         pic_txt_box = wait.until(
-                            EC.presence_of_element_located(
+                            EC.visibility_of_element_located(
                                 (By.XPATH, txt_xpath)
                             )
                         )
@@ -228,7 +225,7 @@ def send_message(
                         paste_image(pic_txt_box)
                         sleep(wait_time)
                         send_pic = wait.until(
-                            EC.presence_of_element_located(
+                            EC.visibility_of_element_located(
                                 (By.XPATH, send_pic_xpath)
                             )
                         )
@@ -245,17 +242,17 @@ def send_message(
                     logger.info(
                         f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
                     )
-            except NoSuchElementException:
-                print(f"Phone number +{phone} not valid!")
+            except TimeoutException as e:
+                logger.error(f"\n TimeoutException: {str(e)}")
                 logger.info(
-                    f"\n Receiver: +{phone}\n Error: Phone number not valid!"
+                    f"\n Receiver: +{phone}\n Error: Element not found!"
                 )
                 continue
         driver.quit()
 
         return f"{len(receivers)} messages sent successfully!"
     except Exception as e:
-        logger.info(f"Script failure | error: {e}")
+        logger.error(f"Script failure | error: {str(e)}")
         print(e)
         return f"Error: {e}"
     finally:
