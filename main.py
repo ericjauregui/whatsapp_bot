@@ -29,15 +29,16 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
         "Type yes/no if you want to send pictures in the 'assets' folder:\n"
     ).lower()
     if pics_flow == "yes":
+        pics = [i for i in listdir("assets/") if i.endswith(".jpg") or i.endswith(".jpeg")]
         print(
-            f"Sending {len(listdir('assets/'))} picture(s): {listdir('assets/')}"
+            f"Sending {len(pics)} picture(s): {pics}"
         )
         utils.send_message(
             driver_path=driver,
             cookies_path=cookies,
             include_pics=True,
             message=input("Enter your message: "),
-            wait_time=15, # 7 seconds if running on mac
+            wait_time=5, # 7 seconds if running on mac
         )
     elif pics_flow == "no":
         utils.send_message(
@@ -45,7 +46,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             cookies_path=cookies,
             include_pics=False,
             message=input("Enter your message: "),
-            wait_time=10, # 7 seconds if running on mac
+            wait_time=5, # 7 seconds if running on mac
         )
     else:
         exit("Please try again and type 'yes' to start the program")
