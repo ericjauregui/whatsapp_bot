@@ -284,7 +284,7 @@ def send_message(
                     session_log['recipients'].append(phone)
                     session_log['timestamps'].append(str(datetime.now()))
                     continue
-            return f"{session_log['status'].count('success')} messages sent successfully!"
+        return f"{session_log['status'].count('success')} messages sent successfully!"
     except Exception as e:
         logger.error(f"Script failure | error: {str(e)}")
         print(e)
