@@ -1,6 +1,22 @@
 def clean_number(number: str) -> str:
     return ''.join(filter(lambda x: x.isdigit(), str(number)))
 
+def clean_recipients(validator, recipients_csv, logger) -> None:
+    import pandas as pd
+    df_v = pd.read_csv(validator)
+    df_r = pd.read_csv(recipients_csv)
+    df_v = df_v.loc[df_v['status'] == 'failed']
+    df_v.drop(columns=['status', 'timestamps'], inplace=True).reset_index(inplace=True, drop=True)
+    if df_v.shape[0] > 0:
+        df_r.merge(how='outer', right='df_v', left_on=['phone_number'], right_on=['recipients'])
+        df_r.drop(columns=['recipients'], inplace=True).reset_index(inplace=True, drop=True)
+        df_r.to_csv(recipients_csv) # todo verify if this works to replace file if existing
+        logger.info(f"Recipients cleanup done: {len(df_v)} invalid phone numbers removed and file updated!")
+        return None
+    else:
+        logger.info("Recipients cleanup done: no invalid phone numbers found!")
+        return None
+
 def dict_to_csv(data: dict, file_name: str) -> None:
     from csv import DictWriter
     with open(file_name, "w", newline="") as file:
@@ -287,6 +303,7 @@ def send_message(
         return f"{session_log['status'].count('success')} messages sent successfully!"
     except Exception as e:
         logger.error(f"Script failure | error: {str(e)}")
+        print(f"Error: session ending | {session_log['status'].count('success')} messages sent successfully!")
         print(e)
         return f"Error: {e}"
     finally:

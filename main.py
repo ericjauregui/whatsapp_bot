@@ -8,6 +8,7 @@ load_dotenv()
 
 driver = getenv('FIREFOX_DRIVER_PATH')
 cookies = getenv('FIREFOX_COOKIES_PATH')
+recipients_path = 'recipients/recipients.csv'
 
 if utils.check_wd(path.dirname(path.abspath(__file__))):
     print(
@@ -19,7 +20,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
           5. You can stop this program by pressing ctrl+c
           """
     )
-    with open("recipients/recipients.csv", "r") as file:
+    with open(recipients_path, "r") as file:
         csv = reader(file)
         recipients = list(map(lambda x: x[2], list(csv)))[1:]
     print(
@@ -51,5 +52,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
     else:
         exit("Please try again and type 'yes' to start the program")
     utils.logs_cleanup("logs")
+    # todo figure out how to get latest csv in logs/* and if doesn't exist then skip function
+    utils.clean_recipients(..., recipients_path)
 else:
     exit("Please try again and type 'yes' to start the program")
