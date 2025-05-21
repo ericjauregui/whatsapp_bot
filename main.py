@@ -53,6 +53,6 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
         exit("Please try again and type 'yes' to start the program")
     utils.logs_cleanup("logs")
     # todo figure out how to get latest csv in logs/* and if doesn't exist then skip function
-    utils.clean_recipients(..., recipients_path)
+    # utils.clean_recipients(..., recipients_path)
 else:
     exit("Please try again and type 'yes' to start the program")
