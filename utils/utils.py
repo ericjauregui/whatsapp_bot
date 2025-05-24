@@ -1,22 +1,6 @@
 def clean_number(number: str) -> str:
     return ''.join(filter(lambda x: x.isdigit(), str(number)))
 
-def clean_recipients(validator, recipients_csv, logger) -> None:
-    import pandas as pd
-    df_v = pd.read_csv(validator)
-    df_r = pd.read_csv(recipients_csv)
-    df_v = df_v.loc[df_v['status'] == 'failed']
-    df_v.drop(columns=['status', 'timestamps'], inplace=True).reset_index(inplace=True, drop=True)
-    if df_v.shape[0] > 0:
-        df_r.merge(how='outer', right='df_v', left_on=['phone_number'], right_on=['recipients'])
-        df_r.drop(columns=['recipients'], inplace=True).reset_index(inplace=True, drop=True)
-        df_r.to_csv(recipients_csv) # todo verify if this works to replace file if existing
-        logger.info(f"Recipients cleanup done: {len(df_v)} invalid phone numbers removed and file updated!")
-        return None
-    else:
-        logger.info("Recipients cleanup done: no invalid phone numbers found!")
-        return None
-
 def dict_to_csv(data: dict, file_name: str) -> None:
     from csv import DictWriter
     with open(file_name, "w", newline="") as file:
@@ -46,6 +30,27 @@ def setup_logger():
     logger.addHandler(file_handler)
 
     return logger
+
+def clean_recipients(validator, recipients_csv) -> None:
+    import pandas as pd
+    logger = setup_logger()
+    logger.info("\n Cleaning up recipients based on validation results!")
+    df_v = pd.read_csv(validator, header=0)
+    df_r = pd.read_csv(recipients_csv, header=0)
+    df_v = df_v.loc[df_v['status'] == 'failed']
+    df_v.drop(columns=['status', 'timestamps'], inplace=True)
+    df_v.reset_index(inplace=True, drop=True)
+    if df_v.shape[0] > 0:
+        df = df_r.merge(df_v, how='outer', left_on='phone_number', right_on='recipients', indicator=True)
+        df = df[df['_merge'] != 'both']
+        df.drop(columns=['_merge', 'recipients'], inplace=True)
+        df.reset_index(inplace=True, drop=True)
+        df.to_csv(recipients_csv)
+        logger.info(f"Recipients cleanup done: {len(df_v)} invalid phone numbers removed and file updated!")
+        return None
+    else:
+        logger.info("Recipients cleanup done: no invalid phone numbers found!")
+        return None
 
 
 def check_wd(file_path: str) -> bool:
@@ -174,7 +179,7 @@ def send_message(
         3. Have all contacts filled in the recipients.csv file
     """
     from csv import reader
-    from os import listdir, path
+    from os import listdir
     from time import sleep
     from datetime import datetime
 
@@ -203,7 +208,7 @@ def send_message(
         # firefox_options.set_preference('browser.cache.offline.enable', False)
         firefox_options.set_preference('network.http.use-cache', False)
         txt_xpath = """//div[@contenteditable='true' and contains(@aria-label, 'Type a message') and @role='textbox']"""
-        send_pic_xpath = """//span[@data-icon='send']"""
+        send_pic_xpath = """//span[contains(@data-icon, 'send')]"""
         service = FirefoxService(executable_path=driver_path)
         driver = webdriver.Firefox(service=service, options=firefox_options)
         for i, phone in enumerate(receivers):
@@ -260,25 +265,25 @@ def send_message(
                                     )
                                 )
                                 send_pic.click()
-                            else:
-                                attach_xpath = """//button[contains(@title, 'Attach') and @type='button']"""
-                                attach = wait.until(
-                                    EC.visibility_of_element_located(
-                                        (By.XPATH, attach_xpath)
-                                    )
+                            # else:
+                            #     attach_xpath = """//button[contains(@title, 'Attach') and @type='button']"""
+                            #     attach = wait.until(
+                            #         EC.visibility_of_element_located(
+                            #             (By.XPATH, attach_xpath)
+                            #         )
+                            #     )
+                            #     attach.click()
+                            #     sleep(1)
+                            #     pic_attach_xpath = """//input[@type='file' and contains(@accept, 'image')]""" #todo this part isn't working
+                            #     pic_attach = wait.until(
+                            #         EC.visibility_of_element_located(
+                            #             (By.XPATH, pic_attach_xpath)
+                            #         )
+                            #     )
+                            #     pic_attach.send_keys(f"{path.abspath(pic)}")
+                                logger.info(
+                                    f"\n Receiver: +{phone}\n Picture: {pic}\n Sent Successfully!"
                                 )
-                                attach.click()
-                                sleep(1)
-                                pic_attach_xpath = """//input[@type='file' and contains(@accept, 'image')]""" #todo this part isn't working
-                                pic_attach = wait.until(
-                                    EC.visibility_of_element_located(
-                                        (By.XPATH, pic_attach_xpath)
-                                    )
-                                )
-                                pic_attach.send_keys(f"{path.abspath(pic)}")
-                            logger.info(
-                                f"\n Receiver: +{phone}\n Picture: {pic}\n Sent Successfully!"
-                            )
                             sleep(wait_time)
                         print(
                             f"{len(pics)} pictures sent successfully to {phone}!"

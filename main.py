@@ -3,6 +3,7 @@ from csv import reader
 from sys import exit
 from os import listdir, path, getenv
 from dotenv import load_dotenv
+from glob import glob
 
 load_dotenv()
 
@@ -39,7 +40,7 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             cookies_path=cookies,
             include_pics=True,
             message=input("Enter your message: "),
-            wait_time=5, # 7 seconds if running on mac
+            wait_time=5, # 5 seconds if running on mac
         )
     elif pics_flow == "no":
         utils.send_message(
@@ -47,12 +48,16 @@ if utils.check_wd(path.dirname(path.abspath(__file__))):
             cookies_path=cookies,
             include_pics=False,
             message=input("Enter your message: "),
-            wait_time=5, # 7 seconds if running on mac
+            wait_time=5, # 5 seconds if running on mac
         )
     else:
         exit("Please try again and type 'yes' to start the program")
     utils.logs_cleanup("logs")
-    # todo figure out how to get latest csv in logs/* and if doesn't exist then skip function
-    # utils.clean_recipients(..., recipients_path)
+    csv_files = glob("logs/*.csv")
+    if not csv_files:
+        print("No CSV found in logs. Skipping.")
+    else:
+        latest_csv = max(csv_files, key=path.getmtime)
+        utils.clean_recipients(latest_csv, recipients_path)
 else:
     exit("Please try again and type 'yes' to start the program")
