@@ -11,7 +11,7 @@ def dict_to_csv(data: dict, file_name: str) -> None:
 
 def setup_logger():
     import logging
-    from datetime import date
+    from datetime import datetime
     from os import makedirs
 
     # Create a logger
@@ -20,7 +20,7 @@ def setup_logger():
 
     # Create a file handler and check if folder exists
     makedirs("logs", exist_ok=True)
-    file_handler = logging.FileHandler(f"logs/whatsapp_bot_{date.today()}.log")
+    file_handler = logging.FileHandler(f"logs/whatsapp_bot_{datetime.now().strftime("%Y%m%d_%H%M")}.log")
 
     # Create a formatter and add it to the file handler
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -45,7 +45,7 @@ def clean_recipients(validator, recipients_csv) -> None:
         df = df[df['_merge'] != 'both']
         df.drop(columns=['_merge', 'recipients'], inplace=True)
         df.reset_index(inplace=True, drop=True)
-        df.to_csv(recipients_csv)
+        df.to_csv(recipients_csv, index=False)
         logger.info(f"Recipients cleanup done: {len(df_v)} invalid phone numbers removed and file updated!")
         return None
     else:
@@ -170,7 +170,7 @@ def send_message(
     include_pics: bool = False,
     message: str = " ",
     wait_time: int = 5,
-    process_timeout: int = 15,
+    process_timeout: int = 7,
 ) -> str:
     """Send Pictures or Messages to Multiple WhatsApp Contacts
     Requirements:
@@ -213,24 +213,51 @@ def send_message(
         driver = webdriver.Firefox(service=service, options=firefox_options)
         for i, phone in enumerate(receivers):
             phone = clean_number(phone)
-            if len(phone) < 10:
-                logger.info(f"\n Receiver: +{phone}\n Error: Invalid phone number!")
-                session_log['status'].append('bad_number')
-                session_log['recipients'].append(phone)
-                session_log['timestamps'].append(str(datetime.now()))
-                continue
+            wait = WebDriverWait(driver, process_timeout)
+            open_page(driver=driver, base_url=base_url, receiver=phone)
+            logger.info(f"\n opened page for +{phone} at this url: {base_url}")
+            if i == 0:
+                sleep(15)
             else:
-                wait = WebDriverWait(driver, process_timeout)
-                open_page(driver=driver, base_url=base_url, receiver=phone)
-                logger.info(f"\n opened page for +{phone} at this url: {base_url}")
-                if i == 0:
-                    sleep(30)
+                sleep(wait_time)
+            try: # If the phone number is not registered on WhatsApp then we'll get a timeout exception
+                if include_pics:
+                    logger.info(
+                        f"\n Receiver: +{phone} \n Picture option selected"
+                    )
+                    pics = [f for f in listdir("assets") if f.endswith(".jpg") or f.endswith(".jpeg")]
+                    for pic in pics:
+                        if copy_image(f"assets/{pic}"):
+                            logger.info(
+                                f"\n Copied successfully: {pic}"
+                            )
+                            pic_txt_box = wait.until(
+                            EC.visibility_of_element_located(
+                                (By.XPATH, txt_xpath)
+                            )
+                        )
+                            pic_txt_box.click()
+                            for char in message.strip():
+                                pic_txt_box.send_keys(char)
+                                sleep(0.1)
+                            paste_image(pic_txt_box)
+                            sleep(wait_time)
+                            send_pic = wait.until(
+                                EC.visibility_of_element_located(
+                                    (By.XPATH, send_pic_xpath)
+                                )
+                            )
+                            send_pic.click()
+                            logger.info(
+                                f"\n Receiver: +{phone}\n Picture: {pic}\n Sent Successfully!"
+                            )
+                        sleep(wait_time)
+                    print(
+                        f"{len(pics)} picture sent successfully to {phone}!"
+                    )
                 else:
-                    sleep(wait_time)
-                # Check if the phone number is registered on WhatsApp
-                try:
                     txt_box = wait.until(
-                        EC.visibility_of_element_located((By.XPATH, txt_xpath))
+                    EC.visibility_of_element_located((By.XPATH, txt_xpath))
                     )
                     txt_box.click()
                     for char in message.strip():
@@ -241,77 +268,30 @@ def send_message(
                         f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
                     )
                     sleep(wait_time)
-                    if include_pics:
-                        logger.info(
-                            f"\n Receiver: +{phone} \n Picture option selected"
-                        )
-                        pics = [f for f in listdir("assets") if f.endswith(".jpg") or f.endswith(".jpeg")]
-                        for pic in pics:
-                            if copy_image(f"assets/{pic}"):
-                                logger.info(
-                                    f"\n Copied successfully: {pic}"
-                                )
-                                pic_txt_box = wait.until(
-                                EC.visibility_of_element_located(
-                                    (By.XPATH, txt_xpath)
-                                )
-                            )
-                                pic_txt_box.click()
-                                paste_image(pic_txt_box)
-                                sleep(wait_time)
-                                send_pic = wait.until(
-                                    EC.visibility_of_element_located(
-                                        (By.XPATH, send_pic_xpath)
-                                    )
-                                )
-                                send_pic.click()
-                            # else:
-                            #     attach_xpath = """//button[contains(@title, 'Attach') and @type='button']"""
-                            #     attach = wait.until(
-                            #         EC.visibility_of_element_located(
-                            #             (By.XPATH, attach_xpath)
-                            #         )
-                            #     )
-                            #     attach.click()
-                            #     sleep(1)
-                            #     pic_attach_xpath = """//input[@type='file' and contains(@accept, 'image')]""" #todo this part isn't working
-                            #     pic_attach = wait.until(
-                            #         EC.visibility_of_element_located(
-                            #             (By.XPATH, pic_attach_xpath)
-                            #         )
-                            #     )
-                            #     pic_attach.send_keys(f"{path.abspath(pic)}")
-                                logger.info(
-                                    f"\n Receiver: +{phone}\n Picture: {pic}\n Sent Successfully!"
-                                )
-                            sleep(wait_time)
-                        print(
-                            f"{len(pics)} pictures sent successfully to {phone}!"
-                        )
-                    else:
-                        print(f"'{message}' sent successfully to {phone}!")
-                        logger.info(
-                            f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
-                        )
-                    session_log['status'].append('success')
-                    session_log['recipients'].append(phone)
-                    session_log['timestamps'].append(str(datetime.now()))
-                except TimeoutException as e:
-                    logger.error(f"\n TimeoutException: {str(e)}")
+                    print(f"'{message}' sent successfully to {phone}!")
                     logger.info(
-                        f"\n Receiver: +{phone}\n Error: Element not found!"
+                        f"\n Receiver: +{phone}\n Message: {message}\n Sent Successfully!"
                     )
-                    session_log['status'].append('failed')
-                    session_log['recipients'].append(phone)
-                    session_log['timestamps'].append(str(datetime.now()))
-                    continue
+                session_log['status'].append('success')
+                session_log['recipients'].append(phone)
+                session_log['timestamps'].append(str(datetime.now()))
+            except TimeoutException as e:
+                logger.error(f"\n TimeoutException: {str(e)}")
+                logger.info(
+                    f"\n Receiver: +{phone}\n Error: Element not found!"
+                )
+                session_log['status'].append('failed')
+                session_log['recipients'].append(phone)
+                session_log['timestamps'].append(str(datetime.now()))
+                continue
         return f"{session_log['status'].count('success')} messages sent successfully!"
     except Exception as e:
         logger.error(f"Script failure | error: {str(e)}")
+        dict_to_csv(session_log, f'logs/session_log_{datetime.now().strftime("%Y%m%d_%H%M")}.csv')
         print(f"Error: session ending | {session_log['status'].count('success')} messages sent successfully!")
         print(e)
         return f"Error: {e}"
     finally:
         driver.quit()
-        dict_to_csv(session_log, f'logs/session_log_{datetime.now().strftime("%Y%m%d")}.csv')
+        dict_to_csv(session_log, f'logs/session_log_{datetime.now().strftime("%Y%m%d_%H%M")}.csv')
         print("Session log saved successfully!")
